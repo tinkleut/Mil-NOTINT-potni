@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <title>Mesečni potni nalog | MIL SISTEMIKA</title>
+</head>
+
+<body>
+
+    <header class="site-header">
+
+        <div class="header-content">
+
+            <div class="header-space">
+                <div>
+                    <img
+                    src="/logo.png"
+                    alt="MIL SISTEMIKA logo"
+                    class="header-logo"
+                    >
+                </div>
+
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Potni nalogi</p>
+                </div>
+                
+            </div>
+
+            <div>
+                <h1>Pozdravljen, <span id="imePozdrav"></span>!</h1>
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+    <nav class="website-menu">
+
+        <ul>
+
+            <li>
+                <a href="/mojiNalogi">Moji potni nalogi</a>
+            </li>
+
+            <li>
+                <a href="/mojiMesecniPotniNalogi">Moji mesečni potni nalogi</a>
+            </li>
+
+            <li>
+                <a href="/index">Ustvarite nov potni nalog</a>
+            </li>
+
+            <li>
+                <a href="/changePassword">Spremeni geslo</a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutButton">Odjava</a>
+            </li>
+        </ul>
+
+    </nav>
+
+
+    <main class="main-content">
+
+        <section class="travel-order">
+
+            <h2>Nov mesečni potni nalog</h2>
+
+            <p>
+                Izpolnite podatke za službeno pot.
+            </p>
+
+
+            <form id="travelOrderForm">
+
+                <!-- ZAPOSLENI -->
+
+                <div class="form-group">
+
+                    <label for="employee">
+                        Ime
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ime"
+                        name="ime"
+                        placeholder="Ime"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="employee">
+                        Priimek
+                    </label>
+
+                    <input
+                        type="text"
+                        id="priimek"
+                        name="priimek"
+                        placeholder="Priimek"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+                    <label for="home">
+                        Iz prebivališča
+                    </label>
+
+                    <input 
+                        type="text"
+                        id="prebivalisce"
+                        name="prebivalisce"
+                        placeholder="naslov"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+                    <label for="workplace">
+                        Delovno mesto
+                    </label>
+
+                    <input 
+                        type="text"
+                        id="delovno_mesto"
+                        name="delovno_mesto"
+                        placeholder="Delovno mesto"
+                        required
+                    >
+
+                </div>
+
+                <!-- NAMEN POTI -->
+
+                <div class="form-group">
+
+                    <label for="purpose">
+                        Namen službene poti
+                    </label>
+
+                    <input
+                        type="text"
+                        id="purpose"
+                        name="purpose"
+                        placeholder="Npr. sestanek, izobraževanje..."
+                        required
+                    >
+
+                </div>
+
+                <!-- DATUM IN ČAS -->
+
+                <div class="form-group">
+
+                    <div class="form-group">
+
+                        <label for="departureDate">
+                            Označite mesec in leto za katero izpolnjujete mesečni potni nalog. 
+                            Dan označite kot prvi dan v mesecu.
+                        </label>
+
+                        <input
+                            type="date"
+                            id="departureDate"
+                            name="departureDate"
+                            required
+                        >
+
+                    </div>
+                </div>
+
+
+                <!-- PREVOZ -->
+
+                <div class="form-group">
+
+                    <label for="vehicle">
+                        Prevozno sredstvo
+                    </label>
+
+                    <select
+                        id="vehicle"
+                        name="vehicle"
+                        required
+                    >
+
+                        <option value="">
+                            -- Izberi prevozno sredstvo --
+                        </option>
+
+                        <option value="car">
+                            Avto
+                        </option>
+
+                        <option value="other">
+                            Drugo prevozno sredstvo
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PODATKI ZA AVTO -->
+
+                <div id="carDetails" class="vehicle-details hidden">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="register_plate">
+                                Registrska tablica
+                            </label>
+
+                            <input
+                                type="text"
+                                id="registerska"
+                                name="registerska"
+                                placeholder="LJ KT-126"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="vin">
+                                VIN številka
+                            </label>
+
+                            <input
+                                type="text"
+                                id="vin"
+                                name="vin"
+                                placeholder="VIN številka"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DRUGO PREVOZNO SREDSTVO -->
+
+                <div id="otherVehicleDetails" class="vehicle-details hidden">
+
+                    <div class="form-group">
+
+                        <label for="other_vehicle">
+                            Drugo prevozno sredstvo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="drugo_vozilo"
+                            name="drugo_vozilo"
+                            placeholder="npr. vlak, avtobus, taxi..."
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="predujem">
+                        Plačilo predujema:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="predujem"
+                        name="predujem"
+                        placeholder="Da/Ne, v znesku: "
+                        required
+                    >
+
+                </div>
+
+
+                <!-- OPOMBE -->
+
+                <div class="form-group">
+
+                    <label for="notes">
+                        Opombe
+                    </label>
+
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        rows="5"
+                        placeholder="Dodatne informacije..."
+                    ></textarea>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="potni_nalog_datoteke">Priloge k potnemu nalogu</label>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input
+                            type="file"
+                            id="potni_nalog_datoteke"
+                            name="potni_nalog_datoteke"
+                            multiple
+                        >
+
+                        <button type="button" id="pobrisi_datoteke">
+                            Počisti
+                        </button>
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById('pobrisi_datoteke').addEventListener('click', function () {
+                        document.getElementById('potni_nalog_datoteke').value = '';
+                    });
+                </script>
+
+
+
+                <!-- SUBMIT -->
+
+                <div class="form-actions">
+
+                    <button
+                        id="eraseInfoInNalog"
+                        type="reset"
+                        class="btn-secondary"
+                    >
+                        Počisti
+                    </button>
+
+                    <button 
+                        id="submitNalog"
+                        type="submit"
+                        class="btn-primary"
+                    >
+                        Oddaj potni nalog
+                    </button>
+
+                </div>
+
+                <p id="message"></p>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            <i>© MIL SISTEMIKA d.o.o.</i>
+        </p>
+
+    </footer>
+
+
+    <script src="/JS/auth.js"></script>
+    <script src="/JS/getUserInfo.js"></script>
+    <script src="/JS/travelCarData.js"></script>
+    <script src="/JS/mesecniPotniNalogi.js"></script>
+
+</body>
+
+</html>

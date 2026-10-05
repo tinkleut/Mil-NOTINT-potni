@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <title>Končani potni nalog | MIL SISTEMIKA</title>
+</head>
+
+<body>
+
+    <header class="login-header">
+
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img
+                    src="/logo.png"
+                    alt="MIL SISTEMIKA logo"
+                    class="header-logo"
+                    >
+                </div>
+
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Uredi potni nalog</p>
+                </div>
+                
+            </div>
+        </div>
+
+    </header>
+
+
+    <nav class="website-menu">
+
+        <ul>
+
+            <li>
+                <a href="/admin/closed">Nazaj</a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutButton">Odjava</a>
+            </li>
+        </ul>
+
+    </nav>
+
+
+    <main class="main-content">
+
+        <section class="travel-order">
+
+            <h2>Uredi končani potni nalog in obračun</h2>
+
+            <p>
+                Popravite podatke za službeno pot ter obračun službene poti.
+            </p>
+
+
+            <form id="travelOrderForm">
+
+                <!-- ZAPOSLENI -->
+
+                <div class="form-group">
+
+                    <label for="employee">
+                        Datum in čas izdaje potnega lista
+                    </label>
+
+                    <input
+                        type="text"
+                        id="datum_izdaje"
+                        name="datum_izdaje"
+                        placeholder="Datum in čas izdaje"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" required>
+                        <option value="">-- Izberi status potnega naloga --</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Odobreno</option>
+                        <option value="Disapproved">Zavrnjeno</option>
+                        <option value="Active">Aktivno</option>
+                        <option value="Not paid">Potrebno plačati</option>
+                        <option value="Completed">Končano</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+
+                    <label for="employee">
+                        Ime
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ime"
+                        name="ime"
+                        placeholder="Ime"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="employee">
+                        Priimek
+                    </label>
+
+                    <input
+                        type="text"
+                        id="priimek"
+                        name="priimek"
+                        placeholder="Priimek"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+                    <label for="home">
+                        Iz prebivališča
+                    </label>
+
+                    <input 
+                        type="text"
+                        id="prebivalisce"
+                        name="prebivalisce"
+                        placeholder="naslov"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+                    <label for="workplace">
+                        Delovno mesto
+                    </label>
+
+                    <input 
+                        type="text"
+                        id="delovno_mesto"
+                        name="delovno_mesto"
+                        placeholder="Delovno mesto"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="purpose">
+                        Namen službene poti
+                    </label>
+
+                    <input
+                        type="text"
+                        id="namen"
+                        name="namen"
+                        placeholder="Npr. sestanek, izobraževanje..."
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+                    <label for="vrsta_projekta">Vrsta projekta</label>
+                    <select id="vrsta_projekta" name="vrsta_projekta" required>
+                        <option value="">-- Izberi vrsto projekta --</option>
+                        <option value="CBRN Saas">CBRN Saas</option>
+                        <option value="CBRN SoS">CBRN SoS</option>
+                        <option value="Battlepad EDF">Battlepad EDF</option>
+                        <option value="INTEGRIRIS (IRIS-T) MORS">INTEGRIRIS (IRIS-T) MORS</option>
+                        <option value="C4I BKV (Iskra) MORS">C4I BKV (Iskra) MORS</option>
+                        <option value="LWS (Rony)">LWS (Rony)</option>
+                        <option value="MWCOE">MWCOE</option>
+                        <option value="GCS Air">GCS Air</option>
+                        <option value="GCS Ground (Rheinmetall Unmanned Vehicles)">GCS Ground (Rheinmetall Unmanned Vehicles)</option>
+                        <option value="Restreamer">Restreamer</option>
+                        <option value="RoiP (Radio over IP)">RoiP (Radio over IP)</option>
+                        <option value="Middleware">Middleware</option>
+                        <option value="EINSA">EINSA</option>
+                        <option value="Management">Management</option>
+                        <option value="No project">No project</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="departure">
+                            Kraj in država odhoda
+                        </label>
+
+                        <input
+                            type="text"
+                            id="lokacija_odhoda"
+                            name="lokacija_odhoda"
+                            placeholder="Ljubljana, Slovenija"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="destination">
+                            Končna relacija(kraj in država)
+                        </label>
+
+                        <input
+                            type="text"
+                            id="lokacija_prihoda"
+                            name="lokacija_prihoda"
+                            placeholder="Zadar, Hrvaška"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="departureDate">
+                            Predviden datum in čas odhoda
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="datum_odhoda"
+                            name="datum_odhoda"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="returnDate">
+                            Predviden datum in čas prihoda
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="datum_prihoda"
+                            name="datum_prihoda"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="vehicle">
+                        Prevozno sredstvo
+                    </label>
+
+                    <select
+                        id="vehicle"
+                        name="vehicle"
+                        required
+                    >
+
+                        <option value="">
+                            -- Izberi prevozno sredstvo --
+                        </option>
+
+                        <option value="car">
+                            Avto
+                        </option>
+
+                        <option value="other">
+                            Drugo prevozno sredstvo
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div id="carDetails" class="vehicle-details hidden">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="register_plate">
+                                Registrska tablica
+                            </label>
+
+                            <input
+                                type="text"
+                                id="registerska"
+                                name="registerska"
+                                placeholder="LJ KT-126"
+                            >
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="vin">
+                                VIN številka
+                            </label>
+
+                            <input
+                                type="text"
+                                id="vin"
+                                name="vin"
+                                placeholder="VIN številka"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="otherVehicleDetails" class="vehicle-details hidden">
+
+                    <div class="form-group">
+
+                        <label for="other_vehicle">
+                            Drugo prevozno sredstvo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="other_vehicle"
+                            name="other_vehicle"
+                            placeholder="npr. vlak, avtobus, letalo, taxi..."
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="prenocisce">
+                        Ali potrebujete prenočišče? Za dodatne potrebe, komentarje in drugo pišite spodaj v opombe.
+                    </label>
+
+                    <input
+                        type="text"
+                        id="prenocisce"
+                        name="prenocisce"
+                        placeholder="Da/Ne Hotel, apartma,..."
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="predujem">
+                        Plačilo predujema:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="placilo_predujema"
+                        name="placilo_predujema"
+                        placeholder="Da/Ne, v znesku: "
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="notes">
+                        Opombe
+                    </label>
+
+                    <textarea
+                        id="opombe"
+                        name="opombe"
+                        rows="5"
+                        placeholder="Dodatne informacije..."
+                    ></textarea>
+
+                </div>
+
+                <br>
+            <form id="travelOrderForm">
+
+                <div class="travel-order-header">
+                        <h2>Obračun potnega naloga</h2>
+                        <p>
+                            Vnesite podatke o potovanju, kilometrini in nastalih stroških.
+                        </p>
+                    </div>
+
+                <section class="table-section">
+
+                    <div class="section-heading">
+                        <h3>🍽️ Obračun dnevnic</h3>
+
+                        <p>
+                            Dodajte posamezne dni potovanja in zagotovljene obroke.
+                        </p>
+                    </div>
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Št. dni</th>
+                                    <th>Datum</th>
+                                    <th>Zagotovljeni obroki</th>
+                                    <th>Dnevnica</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody id="table1-body">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+                <section class="table-section">
+
+                    <div class="section-heading">
+
+                        <h3>🚗 Obračun kilometrine</h3>
+
+                        <p>
+                            Vnesite posamezne relacije in pripadajoči obračun.
+                        </p>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Začetna lokacija</th>
+                                    <th>Končna lokacija</th>
+                                    <th>Prevoženi kilometri</th>
+                                    <th>Cena na km</th>
+                                    <th>Obračun / znesek</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody id="mileage-table-body">
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id="kilometrina_lokacija_odhoda"
+                                            name="lokacija_odhoda_km"
+                                            aria-label="Začetna lokacija"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id="kilometrina_lokacija_prihoda"
+                                            name="lokacija_prihoda_km"
+                                            aria-label="Končna lokacija"                                    >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="kilometri_naprej"
+                                            id="kilometri_naprej"
+                                            placeholder="0"
+                                            min="0"
+                                            step="0.5"
+                                            aria-label="Kilometri naprej"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            id="cena_na_km_naprej"
+                                            placeholder="0.43"
+                                            min="0"
+                                            value="0.43"
+                                            step="0.01"
+                                            readonly
+                                            aria-label="Cena na km"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="obracun_kilometrine_naprej"
+                                            id="obracun_kilometrine_naprej"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                            aria-label="Obračun kilometrine naprej"
+                                            readonly
+                                        >
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id="kilometrina_lokacija_prihoda_nazaj"
+                                            name="lokacija_prihoda_nazaj"
+                                            aria-label="Začetna lokacija"
+                                            readonly
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id="kilometrina_lokacija_odhoda_nazaj"
+                                            name="lokacija_odhoda_nazaj"
+                                            aria-label="Končna lokacija"
+                                            readonly
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="kilometri_nazaj"
+                                            id="kilometri_nazaj"
+                                            placeholder="0"
+                                            min="0"
+                                            step="0.5"
+                                            aria-label="Kilometri nazaj"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            id="cena_na_km_nazaj"
+                                            placeholder="0.43"
+                                            min="0"
+                                            value="0.43"
+                                            step="0.01"
+                                            readonly
+                                            aria-label="Cena na km"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="obracun_kilometrine_nazaj"
+                                            id="obracun_kilometrine_nazaj"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                            aria-label="Obračun kilometrine nazaj"
+                                            readonly
+                                        >
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+                <section class="table-section">
+
+                    <div class="section-heading">
+
+                        <h3>🧾 Priloženi računi</h3>
+
+                        <p>
+                            Dodajte račune oziroma druge stroške,
+                            povezane s potovanjem.
+                        </p>
+
+                    </div>
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Podjetje</th>
+                                    <th>Opis stroška</th>
+                                    <th>Znesek</th>
+                                    <th>Priponka</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="table2-body">
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        >
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        >
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        > 
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        >
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        >
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        >
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        >
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="racun_podjetje[]"
+                                            placeholder="Račun / podjetje"
+                                        >
+                                    </td>
+
+
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="opis_stroska[]"
+                                            placeholder="Opis stroška"
+                                        >
+                                    </td>
+
+
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="znesek_racuna[]"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                        >
+                                    </td>
+
+
+                                    <td>
+
+                                        <input
+                                            type="file"
+                                            name="racun_priponka[]"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                        >
+
+                                        <button type="button" class="clear-file" onclick="clearFile(this)">
+                                            Clear
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+                <section class="summary-section">
+
+                    <h3>💰 Povzetek obračuna</h3>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="skupni_stroski">
+                                Skupni stroški
+                            </label>
+
+                            <input
+                                type="number"
+                                id="skupni_stroski"
+                                name="skupni_stroski"
+                                placeholder="0.00"
+                                min="0"
+                                step="0.01"
+                                readonly
+                            >
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="placilo_zaposlenemu">
+                                Za izplačilo zaposlenemu
+                            </label>
+
+                            <input
+                                type="number"
+                                id="placilo_zaposlenemu"
+                                name="placilo_zaposlenemu"
+                                placeholder="0.00"
+                                min="0"
+                                step="0.01"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <div class="form-actions">
+
+                    <button
+                        id="eraseInfoInNalog"
+                        type="reset"
+                        class="btn-secondary"
+                    >
+                        Počisti
+                    </button>
+
+                    <button 
+                        id="submitFinishedObracun"
+                        type="submit"
+                        class="btn-primary"
+                    >
+                        Posodobi končani potni nalog
+                    </button>
+
+                </div>
+
+                <p id="message"></p>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            <i>© MIL SISTEMIKA d.o.o.</i>
+        </p>
+
+    </footer>
+
+
+    <script src="/adminJS/urediKoncaniPotniNalog.js"></script>
+    <script src="/JS/auth.js"></script>
+    <script src="/JS/travelCarData.js"></script>
+    <script src="/adminJS/prikazObracuna.js"></script>
+
+</body>
+
+</html>

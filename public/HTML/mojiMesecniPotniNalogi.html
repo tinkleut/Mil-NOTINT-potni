@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <title>Moji mesečni potni nalogi | MIL SISTEMIKA</title>
+</head>
+
+<body>
+
+    <header class="login-header">
+
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img
+                    src="/logo.png"
+                    alt="MIL SISTEMIKA logo"
+                    class="header-logo"
+                    >
+                </div>
+
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Moji mesečni potni nalogi</p>
+                </div>
+                
+            </div>
+        </div>
+
+    </header>
+
+    <nav class="website-menu">
+
+        <ul>
+
+            <li>
+                <a href="/index">
+                    Nazaj
+                </a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutButton">
+                    Odjava
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <main class="main-content">
+
+        <section class="travel-order">
+
+            <h2>Moji mesečni potni nalogi</h2>
+
+            <p class="page-description">
+                Tukaj lahko pregledate vse svoje mesečne potne naloge.
+            </p>
+
+
+            <div
+                id="message"
+                class="message"
+                style="display: none;"
+            ></div>
+
+            <div
+                id="loading"
+                class="loading"
+            >
+            </div>
+
+
+            <div
+                id="travelOrders"
+                class="travel-orders"
+            >
+
+            </div>
+
+
+            <div
+                id="noTravelOrders"
+                class="no-travel-orders"
+                style="display: none;"
+            >
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            <i>© MIL SISTEMIKA d.o.o.</i>
+        </p>
+
+    </footer>
+
+    <script src="/JS/auth.js"></script>
+    <script src="/JS/mojiMesecniNalogi.js"></script>
+
+</body>
+
+</html>

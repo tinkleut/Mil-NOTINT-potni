@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <title>Neplačani potni nalogi| MIL SISTEMIKA</title>
+</head>
+
+<body>
+
+    <header class="login-header">
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img
+                        src="/logo.png"
+                        alt="MIL SISTEMIKA logo"
+                        class="header-logo"
+                    >
+                </div>
+
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Neplačani potni nalogi</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="website-menu">
+
+        <ul>
+
+            <li>
+                <a href="/admin">Nazaj na domačo stran</a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutButton">Odjava</a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+    <main class="main-content">
+
+        <section class="travel-order">
+
+            <h2 style="text-align: center";>Ne plačani potni nalogi</h2>
+
+            <p class="page-description" style="text-align: center";>
+                Tukaj lahko pregledate vse pe ne plačane potne naloge.
+            </p>
+
+            <div
+                id="message"
+                class="message"
+                style="display: none;"
+            ></div>
+
+            <div
+                id="travelOrders"
+                class="travel-orders"
+            ></div>
+
+            <div
+                id="noTravelOrders"
+                class="no-travel-orders"
+                style="display: none;"
+            >
+
+                <h3>Ni potnih nalogov</h3>
+
+                <p>
+                    Trenutno še nimate ustvarjenega nobenega
+                    potnega naloga.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        <p>
+            <i>© MIL SISTEMIKA d.o.o.</i>
+        </p>
+
+    </footer>
+
+    <script src="/adminJS/paid.js"></script>
+    <script src="/adminJS/adminMessages.js"></script>
+    <script src="/adminJS/adminOrderFilters.js"></script>
+    <script src="/JS/auth.js"></script>
+
+</body>
+
+</html>

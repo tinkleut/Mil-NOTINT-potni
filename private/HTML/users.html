@@ -1,0 +1,311 @@
+<!DOCTYPE html> 
+<html lang="sl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/CSS/style.css">
+        <title>Upravljanje uporabnikov | MIL SISTEMIKA</title>
+    </head>
+    <body>
+
+<header class="login-header">
+    <div class="login-brand">
+        <div class="header-space">
+            <div>
+                <img
+                    src="/logo.png"
+                    alt="MIL SISTEMIKA logo"
+                    class="header-logo"
+                >
+            </div>
+            <div>
+                <h1>Upravljanje uporabnikovih podatkov</h1>
+                <p>Centralno upravljanje podatkov baze podatkov</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<nav class="website-menu">
+
+    <ul>
+
+        <li>
+            <a href="/admin/settings">Nazaj</a>
+        </li>
+
+        <li>
+            <a href="#" id="logoutButton">Odjava</a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<main class="main-content">
+
+    <section class="travel-order">
+
+        <div id="userModal" class="modal">
+
+            <div class="modal-content">
+
+                <div class="travel-order-header">
+
+                    <h2 id="userModalTitle">
+                        Dodaj uporabnika
+                    </h2>
+
+                    <p>
+                        Vnesite podatke novega uporabnika.
+                    </p>
+
+                </div>
+
+                <form id="userForm" method="post">
+
+                    <div class="form-section">
+
+                        <h3>Osebni podatki</h3>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="ime">
+                                    Ime 
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="ime"
+                                    name="ime"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="priimek">
+                                    Priimek 
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="priimek"
+                                    name="priimek"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="prebivalisce">
+                                Prebivališče
+                            </label>
+
+                            <input
+                                type="text"
+                                id="prebivalisce"
+                                name="prebivalisce"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="registerska">
+                                    Registerska 
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="registerska"
+                                    name="registerska"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="priimek">
+                                    Vin 
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="vin"
+                                    name="vin"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                                <label for="priimek">
+                                    Status 
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="status"
+                                    name="status"
+                                    required
+                                >
+
+                            </div>
+
+                    </div>
+
+
+                    <div class="form-section">
+
+                        <h3>Uporabniški račun</h3>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="username">
+                                    Uporabniško ime 
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="geslo">
+                                    Geslo
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="geslo"
+                                    name="geslo"
+                                    placeholder="Pustite prazno, da geslo ostane nespremenjeno"
+                                >
+
+                                 <p>Pri ustvarjanju vnesite geslo. Pri urejanju ga pustite praznega, če ga ne želite spremeniti.</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-section">
+
+                        <h3>Delovni podatki</h3>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="delovno_mesto">
+                                    Delovno mesto
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="delovno_mesto"
+                                    name="delovno_mesto"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="role">
+                                    Vloga
+                                </label>
+
+                                <select
+                                    id="role"
+                                    name="role"
+                                >
+
+                                    <option value="zaposleni">
+                                        Zaposleni
+                                    </option>
+
+                                    <option value="admin">
+                                        Admin
+                                    </option>
+
+                                    <option value="nezaposleni">
+                                        Nezaposleni
+                                    </option>                                    
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <input type="hidden" id="userId">
+
+                    <div class="form-actions">
+                    
+                        <button
+                            type="submit"
+                            id="submitBtn"
+                            class="btn btn-primary"
+                        >
+                            💾 Shrani
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <div id="message" style="margin-top: 20px; padding: 10px; border-radius: 4px;"></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+
+    <p>
+        <i>© MIL SISTEMIKA d.o.o.</i>
+    </p>
+
+</footer>
+
+<script src="/adminJS/dodajUsers.js"></script>
+<script src="/JS/auth.js"></script>
+
+</body> </html>

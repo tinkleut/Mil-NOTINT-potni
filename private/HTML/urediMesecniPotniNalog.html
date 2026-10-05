@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/CSS/style.css">
+    <title>Uredi mesečni potni nalog | MIL SISTEMIKA</title>
+</head>
+
+<body>
+    <header class="login-header">
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img src="/logo.png" alt="MIL SISTEMIKA logo" class="header-logo">
+                </div>
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Administracija potnih nalogov</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="website-menu">
+        <ul>
+            <li><a href="/admin/vsiMesecniPotniNalogi">Nazaj</a></li>
+            <li><a href="#" id="logoutButton">Odjava</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <section class="travel-order">
+            <h2>Uredi mesečni potni nalog</h2>
+            <p>Popravite podatke za mesečni potni nalog.</p>
+
+            <form id="monthlyTravelOrderForm">
+                <div id="message" class="form-message" role="status" aria-live="polite"></div>
+
+                <input type="hidden" id="datum_izdaje" name="datum_izdaje">
+
+                <!-- Add this section to display existing files -->
+                <div class="form-group">
+                    <label>Priložene datoteke</label>
+                    <div id="travelOrderFiles"></div>
+                </div>
+
+                <!-- Add this section for uploading new files -->
+                <div class="form-group">
+                    <label for="travelOrderFiles">Dodaj nove datoteke</label>
+                    <input type="file" id="travelOrderFilesInput" name="travelOrderFilesInput" multiple>
+                    <button type="button" id="clearTravelOrderFiles" class="btn-secondary">Počisti izbor</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" required>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Odobreno</option>
+                        <option value="Disapproved">Zavrnjeno</option>
+                        <option value="Active">Aktivno</option>
+                        <option value="Not paid">Potrebno plačati</option>
+                        <option value="Completed">Končano</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ime">Ime</label>
+                    <input type="text" id="ime" name="ime" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="priimek">Priimek</label>
+                    <input type="text" id="priimek" name="priimek" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="prebivalisce">Prebivališče</label>
+                    <input type="text" id="prebivalisce" name="prebivalisce" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="delovno_mesto">Delovno mesto</label>
+                    <input type="text" id="delovno_mesto" name="delovno_mesto" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="purpose">Namen službene poti</label>
+                    <input type="text" id="purpose" name="purpose" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="departureDate">Mesec in leto mesečnega potnega naloga</label>
+                    <input type="date" id="departureDate" name="departureDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="vehicle">Prevozno sredstvo</label>
+                    <select id="vehicle" name="vehicle" required>
+                        <option value="">-- Izberi prevozno sredstvo --</option>
+                        <option value="car">Avto</option>
+                        <option value="other">Drugo prevozno sredstvo</option>
+                    </select>
+                </div>
+
+                <div id="carDetails" class="vehicle-details hidden">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="registerska">Registrska tablica</label>
+                            <input type="text" id="registerska" name="registerska" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vin">VIN številka</label>
+                            <input type="text" id="vin" name="vin" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="otherVehicleDetails" class="vehicle-details hidden">
+                    <div class="form-group">
+                        <label for="drugo_vozilo">Drugo prevozno sredstvo</label>
+                        <input type="text" id="drugo_vozilo" name="drugo_vozilo" placeholder="Npr. vlak, avtobus, taxi...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="predujem">Plačilo predujema</label>
+                    <input type="text" id="predujem" name="predujem" placeholder="Da/Ne, v znesku:" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="opombe">Opombe</label>
+                    <textarea id="opombe" name="opombe" rows="5" placeholder="Dodatne opombe"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Shrani spremembe</button>
+                    <a class="btn btn-secondary" href="/admin/vsiMesecniPotniNalogi">Prekliči</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p><i>© MIL SISTEMIKA d.o.o.</i></p>
+    </footer>
+
+    <script src="/JS/auth.js"></script>
+    <script src="/adminJS/urediMesecniPotniNalog.js"></script>
+</body>
+
+</html>

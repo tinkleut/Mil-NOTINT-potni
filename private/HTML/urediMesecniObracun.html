@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/CSS/style.css">
+    <title>Uredi mesečni obračun | MIL SISTEMIKA</title>
+</head>
+
+<body>
+    <header class="login-header">
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img src="/logo.png" alt="MIL SISTEMIKA logo" class="header-logo">
+                </div>
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Uredi mesečni obračun</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="website-menu">
+        <ul>
+            <li><a href="/admin/mesecniObracun">Nazaj</a></li>
+            <li><a href="#" id="logoutButton">Odjava</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <section class="travel-order">
+            <h2>Uredi mesečni obračun <span id="displayId"></span></h2>
+            <div id="message" class="form-message" role="status" aria-live="polite"></div>
+
+            <section class="table-section">
+                <div class="section-heading"><h3>Osnovni podatki</h3></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ime">Ime in priimek</label>
+                        <input id="ime" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="prebivalisce">Prebivališče</label>
+                        <input id="prebivalisce" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="delovno_mesto">Delovno mesto</label>
+                        <input id="delovno_mesto" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <input id="status" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="namen">Namen službene poti</label>
+                    <input id="namen" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="mesec">Mesec</label>
+                    <input id="mesec" readonly>
+                </div>
+            </section>
+
+            <form id="monthlyCalculationForm" enctype="multipart/form-data">
+                <section class="table-section">
+                    <div class="section-heading"><h3>Dnevne kilometrine</h3></div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dan</th>
+                                    <th>Relacija</th>
+                                    <th>Kilometri</th>
+                                    <th>Kilometrina</th>
+                                    <th>Znesek</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyMileageBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="table-section">
+                    <div class="section-heading"><h3>Priponke</h3></div>
+                    <div class="file-input-row">
+                        <input type="file" id="monthlyFiles" name="monthlyFiles" multiple accept=".pdf,.jpg,.jpeg,.png">
+                        <button type="button" id="clearMonthlyFiles" class="btn-secondary">Počisti</button>
+                    </div>
+                    <div id="existingFiles">Ni prilog.</div>
+                </section>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="monthlyTotal">Skupni stroški</label>
+                        <input id="monthlyTotal" readonly value="0.00 EUR">
+                    </div>
+                    <div class="form-group">
+                        <label for="employeePayment">Plačilo zaposlenemu</label>
+                        <input id="employeePayment" name="placilo_zaposlenemu" type="number" min="0" step="0.01" value="0">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Shrani mesečni obračun</button>
+                    <a class="btn btn-secondary" href="/admin/mesecniObracun">Prekliči</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p><i>© MIL SISTEMIKA d.o.o.</i></p>
+    </footer>
+
+    <script src="/JS/auth.js"></script>
+    <script src="/adminJS/urediMesecniObracun.js"></script>
+</body>
+
+</html>

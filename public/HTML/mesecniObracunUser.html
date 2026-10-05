@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/CSS/style.css">
+    <title>Mesečni obračun | MIL SISTEMIKA</title>
+</head>
+<body>
+    <header class="login-header">
+
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img src="/logo.png" alt="MIL SISTEMIKA logo" class="header-logo">
+                </div>    
+                
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Mesečni obračun potnega naloga</p>
+                </div>
+            </div>
+        </div>
+        
+    </header>
+    <nav class="website-menu" aria-label="Glavni meni">
+        <ul>
+            <li><a href="/mojiMesecniPotniNalogi">Nazaj</a></li>
+            <li><a href="#" id="logoutButton">Odjava</a></li>
+        </ul>
+    </nav>
+    <main class="main-content">
+        <section class="travel-order">
+            <div class="travel-order-header">
+                <h2>Obračun mesečnega potnega naloga <span id="orderId"></span></h2>
+                <p>Vnesite kilometrino za posamezne dni in dodajte dokazila.</p>
+            </div>
+            <form id="monthlyCalculationForm" enctype="multipart/form-data">
+                <section class="table-section">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dan</th>
+                                    <th>Datum</th>
+                                    <th>Relacija</th>
+                                    <th>Kilometri</th>
+                                    <th>Cena/km</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyMileageBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+                <section class="table-section">
+                    <div class="section-heading"><h3>Priponke</h3></div>
+                    <div class="file-input-row">
+                        <input type="file" id="monthlyFiles" name="monthlyFiles" multiple accept=".pdf,.jpg,.jpeg,.png">
+                        <button type="button" id="clearMonthlyFiles" class="btn-secondary">Počisti</button>
+                    </div>
+                    <div id="existingFiles"></div>
+                </section>
+                <div class="form-group">
+                    <label for="monthlyTotal">Skupni stroški</label>
+                    <input id="monthlyTotal" readonly value="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="employeePayment">Plačilo zaposlenemu</label>
+                    <input id="employeePayment" readonly value="0.00">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Shrani obračun</button>
+                    <a class="btn btn-secondary" href="/mojiMesecniPotniNalogi">Prekliči</a>
+                </div>
+                <p id="message" class="form-message" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+    <footer><p><i>© MIL SISTEMIKA d.o.o.</i></p></footer>
+    <script src="/JS/auth.js"></script>
+    <script src="/JS/mesecniObracunUser.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="sl"> 
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <title>Upravljanje dnevnic | MIL SISTEMIKA</title>
+
+</head>
+
+<body>
+
+<header class="login-header">
+    <div class="login-brand">
+        <div class="header-space">
+            <div>
+                <img
+                    src="/logo.png"
+                    alt="MIL SISTEMIKA logo"
+                    class="header-logo"
+                >
+            </div>
+            <div>
+                <h1>Upravljanje podatkov dnevnic</h1>
+                <p>Centralno upravljanje podatkov baze podatkov</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<nav class="website-menu">
+
+    <ul>
+
+        <li>
+            <a href="/admin/settings">Nazaj</a>
+        </li>
+
+        <li>
+            <a href="#" id="logoutButton">Odjava</a>
+        </li>
+
+    </ul>
+
+</nav>
+
+<main class="main-content">
+
+    <section class="travel-order">
+
+        <div id="dnevnicaModal" class="modal">
+
+            <div class="modal-content">
+
+                <div class="travel-order-header">
+
+                    <h2 id="dnevnicaModalTitle">
+                        Dodaj dnevnico
+                    </h2>
+
+                    <p>
+                        Vnesite podatke dnevnice.
+                    </p>
+
+                </div>
+
+                <form id="dnevnicaForm">
+
+                    <div class="form-section">
+
+                        <h3>Osnovni podatki</h3>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="dnevnica-drzava">
+                                    Država 
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="dnevnica-drzava"
+                                    name="drzava"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="dnevnica-valuta">
+                                    Valuta 
+                                </label>
+
+                                <select
+                                    id="dnevnica-valuta"
+                                    name="valuta"
+                                    required
+                                >
+
+                                    <option value="€">
+                                        €
+                                    </option>
+
+                                    <option value="$">
+                                        $
+                                    </option>
+
+                                    <option value="£">
+                                        £
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <h3>Celota Dnevnice nad 14 ur</h3>
+
+                        <input
+                            type="number"
+                            id="dnevnica-14-celota"
+                            name="nad-14h-celota"
+                            step="0.01"
+                            min="0"
+                            placeholder="48"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <h3>Celota Dnevnice nad 8 ur</h3>
+
+                        <input
+                            type="number"
+                            id="dnevnica-8-celota"
+                            name="nad-8h-celota"
+                            step="0.01"
+                            min="0"
+                            placeholder="36"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <h3>Celota Dnevnice nad 6 ur</h3>
+
+                        <input
+                            type="number"
+                            id="dnevnica-6-celota"
+                            name="nad-6h-celota"
+                            step="0.01"
+                            min="0"
+                            placeholder="12"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Shrani dnevnico
+                        </button>
+
+                    </div>
+
+
+                </form>
+                <div id="message" class="form-message" role="status" aria-live="polite"></div>
+                        </div>
+    </section>
+</main>
+
+<footer>
+
+    <p>
+        <i>© MIL SISTEMIKA d.o.o.</i>
+    </p>
+
+</footer>
+
+<script src="/adminJS/dnevnice.js"></script>
+<script src="/JS/auth.js"></script>
+
+</body> </html>

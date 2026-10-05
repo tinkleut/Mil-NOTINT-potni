@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/CSS/style.css">
+    <title>Upravljanje uporabnikov in dnevnic</title>
+</head>
+<body>
+    <div class="container">
+
+    <header class="login-header">
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img
+                        src="/logo.png"
+                        alt="Logotip"
+                        class="header-logo"
+                    >
+                </div>
+                <div>
+                    <h1>Mil Sistemika</h1>
+                    <p>Centralno upravljanje podatkovne baze</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="website-menu">
+        <ul>
+            <li>
+                <a href="/admin/users">Dodaj uporabnika</a>
+            </li>
+
+            <li>
+                <a href="/admin/dnevnice">Dodaj dnevnico</a>
+            </li>
+
+            <li>
+                <a href="/admin">Nazaj na domačo stran</a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutButton">Odjava</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+
+        <div id="alert" class="login-message"></div>
+
+        <section id="users" class="travel-order section active">
+
+            <div class="travel-order-header">
+                <h2>👥 Uporabniki</h2>
+                <p>
+                    Upravljanje uporabnikov, njihovih podatkov,
+                    delovnih mest in uporabniških vlog.
+                </p>
+            </div>
+
+            <div id="users-stats" class="summary-section">
+                <h3>Pregled uporabnikov</h3>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Skupaj uporabnikov</label>
+                        <input
+                            type="text"
+                            id="users-total"
+                            value="0"
+                            readonly
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Administratorji</label>
+                        <input
+                            type="text"
+                            id="users-admins"
+                            value="0"
+                            readonly
+                        >
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="table-section">
+
+                <div class="section-heading">
+                    <h3>Seznam uporabnikov</h3>
+                    <p>
+                        Pregled vseh uporabnikov sistema.
+                    </p>
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table id="users-table">
+
+                        <thead>
+                            <tr>
+                                <th>Ime</th>
+                                <th>Priimek</th>
+                                <th>Uporabniško ime</th>
+                                <th>Prebivališče</th>
+                                <th>Delovno mesto</th>
+                                <th>Vloga</th>
+                                <th class="action-column">Uredi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="users-tbody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <br>
+        <br>
+
+        <section id="dnevnice" class="travel-order section">
+
+            <div class="travel-order-header">
+                <h2>💰 Dnevnice</h2>
+                <p>
+                    Upravljanje dnevnic glede na državo,
+                    valuto, čas bivanja in veljavnost.
+                </p>
+            </div>
+
+            <div class="table-section">
+
+                <div class="section-heading">
+                    <h3>Seznam dnevnic</h3>
+                    <p>
+                        Pregled vseh trenutno vnesenih dnevnic.
+                    </p>
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table id="dnevnice-table">
+
+                        <thead>
+                            <tr>
+                                <th>Država</th>
+                                <th>Valuta</th>
+                                <th>Osnovni znesek nad 6 ur poti</th>
+                                <th>Osnovni znesek nad 8 ur poti</th>
+                                <th>Osnovni znesek nad 14ur poti</th>
+                                <th class="action-column">Uredi</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody id="dnevnice-tbody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© MIL SISTEMIKA d.o.o.</p>
+    </footer>
+
+    <script src="/adminJS/settings.js"></script>
+    <script src="/JS/auth.js"></script>
+</body>
+</html>

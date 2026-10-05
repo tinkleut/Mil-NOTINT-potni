@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <title>Vsi mesečni potni nalogi | MIL SISTEMIKA</title>
+</head>
+
+<body>
+
+    <header class="login-header">
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img src="/logo.png" alt="MIL SISTEMIKA logo" class="header-logo">
+                </div>
+
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Vsi mesečni potni nalogi</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="website-menu">
+        <ul>
+            <li><a href="/admin">Nazaj na domačo stran</a></li>
+            <li><a href="#" id="logoutButton">Odjava</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <section class="travel-order">
+            <h1 style="text-align: center;">Vsi mesečni potni nalogi</h1>
+
+            <p class="page-description" style="text-align: center;">
+                Tukaj lahko pregledate vse mesečne potne naloge.
+            </p>
+
+            <br>
+
+            <div id="message" class="message" style="display: none;"></div>
+
+            <div class="order-filters" aria-label="Filtriranje mesečnih potnih nalogov">
+                <label>Od datuma <input type="date" id="filterFrom"></label>
+                <label>Do datuma <input type="date" id="filterTo"></label>
+                <label>Status
+                    <select id="filterStatus">
+                        <option value="">Vsi statusi</option>
+                        <option value="Pending">Čakajoči</option>
+                        <option value="Approved">Odobreni</option>
+                        <option value="Disapproved">Zavrnjeni</option>
+                        <option value="Active">Aktivni</option>
+                        <option value="Not paid">Neplačani</option>
+                        <option value="Completed">Zaključeni</option>
+                    </select>
+                </label>
+                <label>Uporabnik
+                    <select id="filterUser">
+                        <option value="">Vsi uporabniki</option>
+                    </select>
+                </label>
+                <label>Razvrsti
+                    <select id="sortOrders">
+                        <option value="id-desc">ID, padajoče</option>
+                        <option value="date-desc">Datum, novejši najprej</option>
+                        <option value="date-asc">Datum, starejši najprej</option>
+                        <option value="id-asc">ID, naraščajoče</option>
+                    </select>
+                </label>
+                <button type="button" class="login-button" id="applyFilters">Filtriraj</button>
+                <button type="button" class="login-button" id="clearFilters">Počisti</button>
+            </div>
+
+            <div id="travelOrders" class="travel-orders"></div>
+
+            <div id="noTravelOrders" class="no-travel-orders" style="display: none;">
+                <h3>Ni mesečnih potnih nalogov</h3>
+                <p>Trenutno še nimate ustvarjenega nobenega mesečnega potnega naloga.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><i>© MIL SISTEMIKA d.o.o.</i></p>
+    </footer>
+
+    <script src="/adminJS/vsiMesecniPotniNalogi.js"></script>
+    <script src="/JS/auth.js"></script>
+</body>
+
+</html>

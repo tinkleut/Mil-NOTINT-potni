@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/CSS/styleAdmin.css">
+
+    <title>Administracija | MIL SISTEMIKA</title>
+</head>
+
+<body>
+
+    <header class="login-header">
+        <div class="login-brand">
+            <div class="header-space">
+                <div>
+                    <img
+                        src="/logo.png"
+                        alt="MIL SISTEMIKA logo"
+                        class="header-logo"
+                    >
+                </div>
+
+                <div>
+                    <h1>MIL SISTEMIKA</h1>
+                    <p>Administracija potnih nalogov</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="website-menu">
+
+        <ul>
+
+            <li>
+                <a href="/admin/vsiNalogi">Vsi potni nalogi</a>
+            </li>
+
+            <li><a href="/admin/vsiMesecniPotniNalogi">Vsi mesečni potni nalogi</a></li>
+
+            <li><a href="/admin/mesecniObracun">Mesečni obračun</a></li>
+
+
+            <li>
+                <a href="/admin/obracun">Obračun</a>
+            </li>
+
+            <li>
+                <a href="/admin/settings">Nastavitve</a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutButton">Odjava</a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <main class="admin-main">
+
+
+        <section class="page-title">
+
+            <div>
+                <h2>Administracija</h2>
+
+                <p>
+                    Pregled in upravljanje vseh potnih nalogov.
+                </p>
+            </div>
+
+            <div>
+                <button onclick="document.location='/admin/novPotniNalog'"
+                class="btn btn-primary"
+                id="newOrderButton"
+                >
+                    + Nov potni nalog
+                </button>
+
+                <button onclick="document.location='/admin/novMesecniPotniNalog'"
+                    class="btn btn-primary"
+                    id="newOrderButton"
+                >
+                    + Nov mesečni potni nalog
+                </button>
+            </div>
+
+            
+
+        </section>
+
+        <section class="admin-statistics">
+
+            <div class="admin-card pending-card" onclick="document.location='/admin/pending'">
+
+                <h3>Čakajoči</h3>
+
+                <p class="stat-number" id="pendingCount">
+                    
+                </p>
+
+                <span>
+                    Čaka na obravnavo
+                </span>
+
+            </div>
+
+
+            <div class="admin-card approved-card" onclick="document.location='/admin/approved'">
+
+                <h3>Odobreni</h3>
+
+                <p class="stat-number" id="approvedCount">
+                    
+                </p>
+
+                <span>
+                    Odobreni nalogi
+                </span>
+
+            </div>
+
+
+            <div class="admin-card disapproved-card" onclick="document.location='/admin/disapproved'">
+
+                <h3>Zavrnjeni</h3>
+
+                <p class="stat-number" id="disapprovedCount">
+                    
+                </p>
+
+                <span>
+                    Zavrnjeni nalogi
+                </span>
+
+            </div>
+
+
+            <div class="admin-card active-card" onclick="document.location='/admin/active'">
+
+                <h3>Aktivni</h3>
+
+                <p class="stat-number" id="activeCount">
+                    
+                </p>
+
+                <span>
+                    Trenutno aktivni
+                </span>
+
+            </div>
+
+
+            <div class="admin-card not-paid-card" onclick="document.location='/admin/paid'">
+
+                <h3>Neplačani</h3>
+
+                <p class="stat-number" id="notPaidCount">
+                    
+                </p>
+
+                <span>
+                    Še ne plačani potni nalogi
+                </span>
+
+            </div>
+
+
+            <div class="admin-card closed-card" onclick="document.location='/admin/closed'">
+
+                <h3>Zaključeni</h3>
+
+                <p class="stat-number" id="completedCount">
+                    
+                </p>
+
+                <span>
+                    Vsi že končani potni nalogi
+                </span>
+
+            </div>
+
+
+        </section>
+    </main>
+
+    <footer class="site-footer">
+
+    <p>
+        <i>© MIL SISTEMIKA d.o.o.</i>
+    </p>
+
+    <p>
+        Administracija sistema potnih nalogov
+    </p>
+
+    </footer>
+
+
+    <script src="/JS/auth.js"></script>
+    <script src="/adminJS/admin.js"></script>
+
+</body>
+
+</html>
