@@ -9,6 +9,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const cron = require('node-cron');
+require("dotenv").config();
 // A library for creating, reading, and manipulating ZIP files.
 const JSZip = require("jszip");
 //Libraries for converting between XML and JavaScript objects.
@@ -21,6 +22,104 @@ const app = express();
 // INITIALIZE DATABASE CONNECTION
 // Import database instance and ID generator function from database module.
 const { db, nextTravelOrderDisplayId } = require("./private/JS/potniNalogDatabase");
+
+const {
+    orderCreated,
+    orderCreatedByAdmin,
+    orderUpdated,
+    monthlyOrderUpdated,
+    orderApproved,
+    monthlyOrderApproved,
+    orderDisapproved,
+    monthlyOrderDisapproved,
+    orderDeleted,
+    monthlyOrderDeleted,
+    obracunUpdated,
+    monthlyObracunUpdated,
+    orderCompleted,
+    orderStatusChanged,
+    monthlyOrderCompleted,
+    monthlyOrderCreated,
+    monthlyOrderCreatedByAdmin,
+    userInfoChanged,
+} = require("./travelOrderMails");
+
+function getLoggedInUser(req) {
+    const user = db.prepare(`
+        SELECT id, ime, priimek, email
+        FROM users
+        WHERE id = ?
+    `).get(req.session.userId);
+
+    if (!user) {
+        throw new Error("Prijavljenega uporabnika ni mogoče najti.");
+    }
+
+    return user;
+}
+
+function getOrderChanges(existingOrder, updatedOrder) {
+    const labels = {
+        lokacija_odhoda: "Lokacija odhoda",
+        lokacija_prihoda: "Lokacija prihoda",
+        datum_odhoda: "Datum odhoda",
+        datum_prihoda: "Datum prihoda",
+        namen: "Namen poti",
+        vrsta_projekta: "Vrsta projekta",
+        vozilo: "Prevozno sredstvo",
+        registerska: "Registrska tablica",
+        vin: "VIN",
+        drugo_vozilo: "Drugo prevozno sredstvo",
+        prenocisce: "Prenočišče",
+        placilo_predujema: "Predujem",
+        opombe: "Opombe",
+        status: "Status",
+    };
+
+    return Object.entries(updatedOrder).flatMap(([field, newValue]) => {
+        const label = labels[field];
+        if (!label) return [];
+
+        const oldValue = existingOrder[field];
+        if (String(oldValue ?? "") === String(newValue ?? "")) return [];
+
+        return [{ label, oldValue, newValue }];
+    });
+}
+
+function getUserChanges(existingUser, updatedUser) {
+    const labels = {
+        ime: "Ime",
+        priimek: "Priimek",
+        prebivalisce: "Prebivališče",
+        email: "Email",
+        username: "Username",
+        geslo: "Geslo",
+        delovno_mesto: "Delovno mesto",
+        role: "Vloga",
+        status: "Status",
+        registerska: "Registrska tablica",
+        vin: "VIN",
+    };
+
+    return Object.entries(updatedUser).flatMap(([field, newValue]) => {
+        const label = labels[field];
+        if (!label) return [];
+
+        const oldValue = existingUser[field];
+        if (String(oldValue ?? "") === String(newValue ?? "")) return [];
+
+        if (field === "geslo") {
+            return [{
+                label,
+                oldValue: oldValue ? "Nastavljeno" : "Ni nastavljeno",
+                newValue: newValue ? "Posodobljeno" : "Ni nastavljeno",
+            }];
+        }
+
+        return [{ label, oldValue, newValue }];
+    });
+}
 
 // CONFIGURE FILE UPLOAD HANDLING
 // Set multer to store files in memory with size and quantity limits.
@@ -753,7 +852,7 @@ app.get("/api/employees", requireAdmin, (req, res) => {
 
 // CREATE A TRAVEL ORDER API
 
-app.post("/api/travel_order", requireTravelOrderSession, upload.array("potni_nalog_datoteke", 10), (req, res) => { // Accept up to 10 files from the potni_nalog_datoteke form field.
+app.post("/api/travel_order", requireTravelOrderSession, upload.array("potni_nalog_datoteke", 10), async (req, res) => { // Accept up to 10 files from the potni_nalog_datoteke form field.
 
     try {
 
@@ -822,6 +921,7 @@ app.post("/api/travel_order", requireTravelOrderSession, upload.array("potni_nal
             SELECT id, 
                 ime, 
                 priimek, 
+                email,
                 prebivalisce, 
                 delovno_mesto, 
                 registerska, 
@@ -860,8 +960,9 @@ app.post("/api/travel_order", requireTravelOrderSession, upload.array("potni_nal
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
+        const displayId = nextTravelOrderDisplayId();
         const result = stmt.run(
-            nextTravelOrderDisplayId(),
+            displayId,
             userId,
             drzava.id,  
             namen,                   
@@ -882,6 +983,28 @@ app.post("/api/travel_order", requireTravelOrderSession, upload.array("potni_nal
         );
 
         saveTravelOrderAttachments(req.files, result.lastInsertRowid);
+
+        if (Number(mesecni) === 1) {
+            if (req.session.role === "admin") {
+                await monthlyOrderCreatedByAdmin({ displayId, traveler });
+            } else {
+                await monthlyOrderCreated({
+                    displayId,
+                    traveler,
+                    actor: getLoggedInUser(req),
+                    order: req.body,
+                });
+            }
+        } else if (req.session.role === "admin") {
+            await orderCreatedByAdmin({ displayId, traveler });
+        } else {
+            await orderCreated({
+                displayId,
+                traveler,
+                actor: getLoggedInUser(req),
+                order: req.body,
+            });
+        }
 
         res.json({
             success: true,
@@ -1295,8 +1418,12 @@ app.delete("/api/delete_travel_order/:orderId", requireLogin, async (req, res) =
     try {
 
         // First check if order exists.
-        const order = db.prepare("SELECT * FROM potni_nalogi WHERE id = ? AND user_id = ?")
-            .get(orderId, userId);
+        const order = db.prepare(`
+            SELECT pn.*, u.ime AS traveler_ime, u.priimek AS traveler_priimek, u.email AS traveler_email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ? AND pn.user_id = ?
+        `).get(orderId, userId);
 
         if (!order) {
             return res.status(404).json({ 
@@ -1307,6 +1434,22 @@ app.delete("/api/delete_travel_order/:orderId", requireLogin, async (req, res) =
         // Delete the order.
         const stmt = db.prepare("DELETE FROM potni_nalogi WHERE id = ? AND user_id = ?");
         const result = stmt.run(orderId, userId);
+
+        if (result.changes > 0) {
+            const notifyOrderDeleted = Number(order.mesecni) === 1
+                ? monthlyOrderDeleted
+                : orderDeleted;
+            await notifyOrderDeleted({
+                displayId: order.display_id,
+                traveler: {
+                    ime: order.traveler_ime,
+                    priimek: order.traveler_priimek,
+                    email: order.traveler_email,
+                },
+                actor: req.session.role === "admin" ? undefined : getLoggedInUser(req),
+                changedBy: req.session.role === "admin" ? "admin" : "user",
+            });
+        }
 
         res.json({ success: true, message: "Potni nalog je bil izbrisan" });
 
@@ -1326,8 +1469,12 @@ app.delete("/api/admin/delete_travel_order/:orderId", requireAdmin, async (req, 
     try {
         
         // First check if order exists.
-        const order = db.prepare("SELECT * FROM potni_nalogi WHERE id = ?")
-            .get(orderId);
+        const order = db.prepare(`
+            SELECT pn.*, u.ime AS traveler_ime, u.priimek AS traveler_priimek, u.email AS traveler_email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
+        `).get(orderId);
 
         if (!order) {
             return res.status(404).json({ 
@@ -1340,6 +1487,21 @@ app.delete("/api/admin/delete_travel_order/:orderId", requireAdmin, async (req, 
             DELETE FROM potni_nalogi 
             WHERE id = ?
             `).run(orderId);
+
+        if (result.changes > 0) {
+            const notifyOrderDeleted = Number(order.mesecni) === 1
+                ? monthlyOrderDeleted
+                : orderDeleted;
+            await notifyOrderDeleted({
+                displayId: order.display_id,
+                traveler: {
+                    ime: order.traveler_ime,
+                    priimek: order.traveler_priimek,
+                    email: order.traveler_email,
+                },
+                changedBy: "admin",
+            });
+        }
 
         res.json({ success: true, message: "Potni nalog je bil izbrisan" });
 
@@ -1436,9 +1598,10 @@ app.put("/api/edit_travel_order/:orderId", requireLogin, async (req, res) => {
 
         // Fetch existing travel order to check ownership and type.
         const existingOrder = db.prepare(`
-            SELECT mesecni, lokacija_odhoda, lokacija_prihoda, datum_odhoda
-            FROM potni_nalogi
-            WHERE id = ? AND user_id = ?
+            SELECT pn.*, u.ime AS traveler_ime, u.priimek AS traveler_priimek, u.email AS traveler_email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ? AND pn.user_id = ?
         `).get(orderId, req.session.userId);
 
         // Return error if travel order doesn't exist or user doesn't own it.
@@ -1479,6 +1642,23 @@ app.put("/api/edit_travel_order/:orderId", requireLogin, async (req, res) => {
             return res.status(400).json({ success: false, message: validationError });
         }
 
+        const updatedOrder = {
+            lokacija_odhoda,
+            lokacija_prihoda,
+            datum_odhoda,
+            datum_prihoda,
+            namen,
+            vrsta_projekta,
+            vozilo,
+            registerska: registerska || null,
+            vin: vin || null,
+            drugo_vozilo: drugo_vozilo || null,
+            prenocisce,
+            placilo_predujema,
+            opombe: opombe || null,
+        };
+        const changes = getOrderChanges(existingOrder, updatedOrder);
+
         // Prepare SQL update statement with all travel order fields.
         const updated_order = db.prepare(`
             UPDATE potni_nalogi 
@@ -1518,6 +1698,23 @@ app.put("/api/edit_travel_order/:orderId", requireLogin, async (req, res) => {
             orderId,
             req.session.userId
         );
+
+        if (changes.length > 0) {
+            const notifyOrderUpdated = Number(existingOrder.mesecni) === 1
+                ? monthlyOrderUpdated
+                : orderUpdated;
+            await notifyOrderUpdated({
+                displayId: existingOrder.display_id,
+                traveler: {
+                    ime: existingOrder.traveler_ime,
+                    priimek: existingOrder.traveler_priimek,
+                    email: existingOrder.traveler_email,
+                },
+                actor: getLoggedInUser(req),
+                changedBy: "user",
+                changes,
+            });
+        }
 
         // Send success response to client.
         res.json({
@@ -1661,13 +1858,15 @@ app.get("/api/mesecni_obracun/data/:id", requireLogin, (req, res) => {
 
 // SAVE MONTHLY MILEAGE CALCULATION
 // Create or update mileage entries and attached files for a monthly travel order billing record.
-app.post("/api/mesecni_obracun/save/:id", requireLogin, upload.any(), (req, res) => {
+app.post("/api/mesecni_obracun/save/:id", requireLogin, upload.any(), async (req, res) => {
     try {
         // Fetch monthly travel order to verify ownership and get basic details.
         const order = db.prepare(`
-            SELECT id, lokacija_odhoda, datum_odhoda, datum_prihoda
-            FROM potni_nalogi
-            WHERE id = ? AND user_id = ? AND mesecni = 1
+            SELECT pn.id, pn.display_id, pn.lokacija_odhoda, pn.datum_odhoda, pn.datum_prihoda,
+                   u.ime, u.priimek, u.email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ? AND pn.user_id = ? AND pn.mesecni = 1
         `).get(req.params.id, req.session.userId);
 
         // Return error if travel order doesn't exist or user doesn't own it.
@@ -1778,8 +1977,16 @@ app.post("/api/mesecni_obracun/save/:id", requireLogin, upload.any(), (req, res)
             return total;
         });
 
+        const totalSaved = saveMonthly();
+        await monthlyObracunUpdated({
+            displayId: order.display_id,
+            traveler: order,
+            actor: getLoggedInUser(req),
+            changedBy: "user",
+        });
+
         // Send success response with calculated total rounded to 2 decimal places.
-        res.json({ success: true, skupaj: saveMonthly().toFixed(2) });
+        res.json({ success: true, skupaj: totalSaved.toFixed(2) });
     } catch (error) {
         // Log error for debugging purposes.
         console.error("Napaka pri shranjevanju mesečnega obračuna:", error);
@@ -1869,13 +2076,15 @@ app.delete("/api/mesecni_obracun/:orderId/files/:fileId", requireLogin, (req, re
 
 // SAVE OR UPDATE MONTHLY BILLING AS ADMIN
 // Create or update monthly billing with mileage entries, employee payment, and attached files as admin.
-app.post("/api/admin/mesecni_obracun/save/:id", requireAdmin, upload.any(), (req, res) => {
+app.post("/api/admin/mesecni_obracun/save/:id", requireAdmin, upload.any(), async (req, res) => {
     try {
         // Fetch monthly travel order to verify it exists.
         const order = db.prepare(`
-            SELECT id, datum_odhoda
-            FROM potni_nalogi
-            WHERE id = ? AND mesecni = 1
+            SELECT pn.id, pn.display_id, pn.datum_odhoda, pn.mesecni,
+                   u.ime, u.priimek, u.email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ? AND pn.mesecni = 1
         `).get(req.params.id);
 
         // Return error if monthly travel order doesn't exist.
@@ -1999,8 +2208,15 @@ app.post("/api/admin/mesecni_obracun/save/:id", requireAdmin, upload.any(), (req
             return total;
         });
 
+        const totalSaved = saveMonthly();
+        await monthlyObracunUpdated({
+            displayId: order.display_id,
+            traveler: order,
+            changedBy: "admin",
+        });
+
         // Send success response with total amount and number of daily entries.
-        res.json({ success: true, skupaj: saveMonthly().toFixed(2), rows: rows.length });
+        res.json({ success: true, skupaj: totalSaved.toFixed(2), rows: rows.length });
     } catch (error) {
         // Log error for debugging purposes.
         console.error("Napaka pri shranjevanju admin mesečnega obračuna:", error);
@@ -2071,10 +2287,19 @@ app.get("/api/obracun/:id", requireLogin, (req, res) => {
 
 // SAVE OBRACUN DATA TO DATABASE 2
 // Create or update billing record with daily allowances, mileage, and receipts for a travel order.
-app.post("/api/obracun/save/:id", requireLogin,  upload.any(), (req, res) => {
+app.post("/api/obracun/save/:id", requireLogin,  upload.any(), async (req, res) => {
     try {
         // Extract travel order ID from URL parameters.
         const potni_nalog_id = req.params.id;
+        const notificationOrder = db.prepare(`
+            SELECT pn.id, pn.display_id, pn.mesecni, u.ime, u.priimek, u.email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
+        `).get(potni_nalog_id);
+        if (!notificationOrder) {
+            return res.status(404).json({ success: false, error: "Potni nalog ni bil najden." });
+        }
 
         // Extract employee payment amount from request body.
         const placilo_zaposlenemu = req.body.placilo_zaposlenemu;
@@ -2276,6 +2501,16 @@ app.post("/api/obracun/save/:id", requireLogin,  upload.any(), (req, res) => {
             WHERE id = ?
         `).run(skupni_stroski, placilo_zaposlenemu, obracun_id);
 
+        const notifyObracunUpdated = Number(notificationOrder.mesecni) === 1
+            ? monthlyObracunUpdated
+            : obracunUpdated;
+        await notifyObracunUpdated({
+            displayId: notificationOrder.display_id,
+            traveler: notificationOrder,
+            actor: getLoggedInUser(req),
+            changedBy: "user",
+        });
+
         // Send success response with billing summary.
         res.json({
             success: true,
@@ -2357,6 +2592,16 @@ app.put("/api/admin/edit_travel_order/:id", requireAdmin, async (req, res) => {
         const vozilo = req.body.vozilo ?? req.body.vehicle;
         const drugo_vozilo = req.body.drugo_vozilo ?? req.body.other_vehicle;
 
+        const existingOrder = db.prepare(`
+            SELECT pn.*, u.ime AS traveler_ime, u.priimek AS traveler_priimek, u.email AS traveler_email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
+        `).get(orderId);
+        if (!existingOrder) {
+            return res.status(404).json({ success: false, error: "Potni nalog ni bil najden." });
+        }
+
         // Spread operator: combine request body with potentially modified vehicle fields.
         // This validates all travel order input data before saving to database.
         const validationError = validateTravelOrderInput({ ...req.body, vozilo, drugo_vozilo });
@@ -2372,6 +2617,24 @@ app.put("/api/admin/edit_travel_order/:id", requireAdmin, async (req, res) => {
                 error: "Prevozno sredstvo je obvezno."
             });
         }
+
+        const updatedOrder = {
+            lokacija_odhoda,
+            lokacija_prihoda,
+            datum_odhoda,
+            datum_prihoda,
+            namen,
+            vrsta_projekta,
+            vozilo,
+            registerska: vozilo === "car" ? (registerska || null) : null,
+            vin: vozilo === "car" ? (vin || null) : null,
+            drugo_vozilo,
+            prenocisce,
+            placilo_predujema,
+            opombe,
+            status,
+        };
+        const changes = getOrderChanges(existingOrder, updatedOrder);
 
         const stmt = db.prepare(`
             UPDATE potni_nalogi
@@ -2413,6 +2676,22 @@ app.put("/api/admin/edit_travel_order/:id", requireAdmin, async (req, res) => {
             orderId
         );
 
+        if (changes.length > 0) {
+            const notifyOrderUpdated = Number(existingOrder.mesecni) === 1
+                ? monthlyOrderUpdated
+                : orderUpdated;
+            await notifyOrderUpdated({
+                displayId: existingOrder.display_id,
+                traveler: {
+                    ime: existingOrder.traveler_ime,
+                    priimek: existingOrder.traveler_priimek,
+                    email: existingOrder.traveler_email,
+                },
+                changedBy: "admin",
+                changes,
+            });
+        }
+
         res.json({ success: true, message: "Potni nalog je bil uspešno posodobljen!" });
 
     } catch (error) {
@@ -2430,9 +2709,10 @@ app.post("/api/admin/all_travel_orders/:id/approve", requireAdmin, async (req, r
     try {
 
         const order = db.prepare(`
-            SELECT *
-            FROM potni_nalogi
-            WHERE id = ?
+            SELECT pn.*, u.ime AS traveler_ime, u.priimek AS traveler_priimek, u.email AS traveler_email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
         `).get(id);
 
         if (!order) {
@@ -2452,6 +2732,19 @@ app.post("/api/admin/all_travel_orders/:id/approve", requireAdmin, async (req, r
             SET status = ?
             WHERE id = ?
         `).run("Approved", id);
+
+        const notifyApproved = Number(order.mesecni) === 1
+            ? monthlyOrderApproved
+            : orderApproved;
+        await notifyApproved({
+            displayId: order.display_id,
+            traveler: {
+                ime: order.traveler_ime,
+                priimek: order.traveler_priimek,
+                email: order.traveler_email,
+            },
+            changedBy: "admin",
+        });
 
         return res.json({
             message: "Travel order approved",
@@ -2476,9 +2769,10 @@ app.post("/api/admin/all_travel_orders/:id/disapprove", requireAdmin, async (req
     try {
 
         const orders = db.prepare(`
-            SELECT *
-            FROM potni_nalogi
-            WHERE id = ?
+            SELECT pn.*, u.ime AS traveler_ime, u.priimek AS traveler_priimek, u.email AS traveler_email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
         `).all(id);
 
         if (orders.length === 0) {
@@ -2501,6 +2795,19 @@ app.post("/api/admin/all_travel_orders/:id/disapprove", requireAdmin, async (req
             SET status = ?
             WHERE id = ?
         `).run("Disapproved", id);
+
+        const notifyDisapproved = Number(order.mesecni) === 1
+            ? monthlyOrderDisapproved
+            : orderDisapproved;
+        await notifyDisapproved({
+            displayId: order.display_id,
+            traveler: {
+                ime: order.traveler_ime,
+                priimek: order.traveler_priimek,
+                email: order.traveler_email,
+            },
+            changedBy: "admin",
+        });
 
         res.json({
             message: "Travel order disapproved",
@@ -3778,7 +4085,12 @@ app.post("/api/admin/all_travel_orders/:id/end_order", requireAdmin, async (req,
     const { id } = req.params;
 
     try {
-        const order = db.prepare("SELECT status FROM potni_nalogi WHERE id = ?").get(id);
+        const order = db.prepare(`
+            SELECT pn.*, u.ime AS traveler_ime, u.priimek AS traveler_priimek, u.email AS traveler_email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
+        `).get(id);
         if (!order) return res.status(404).json({ error: "Travel order not found..." });
         if (order.status !== "Not paid") {
             return res.status(400).json({ error: "Travel order status cannot be ended" });
@@ -3786,6 +4098,19 @@ app.post("/api/admin/all_travel_orders/:id/end_order", requireAdmin, async (req,
         const { archiveBuffer, baseFileName } = await createOrderArchive(id);
 
         db.prepare("UPDATE potni_nalogi SET status = ? WHERE id = ?").run("Completed", id);
+
+        const notifyOrderCompleted = Number(order.mesecni) === 1
+            ? monthlyOrderCompleted
+            : orderCompleted;
+        await notifyOrderCompleted({
+            displayId: order.display_id,
+            traveler: {
+                ime: order.traveler_ime,
+                priimek: order.traveler_priimek,
+                email: order.traveler_email,
+            },
+            changedBy: "admin",
+        });
 
         // Set response header to indicate file is a ZIP archive.
         res.setHeader("Content-Type", "application/zip");
@@ -4037,11 +4362,20 @@ app.get("/api/admin/dnevnica-rate/:drzavaId", (req, res) => {
 
 // SAVE OR UPDATE BILLING RECORD AS ADMIN
 // Create or update billing with daily allowances, mileage, and receipts for a travel order (admin version).
-app.post("/api/admin/obracun/save/:id", requireAdmin,  upload.any(), (req, res) => {
+app.post("/api/admin/obracun/save/:id", requireAdmin,  upload.any(), async (req, res) => {
     try {
 
         // Extract travel order ID from URL parameters.
         const potni_nalog_id = req.params.id;
+        const notificationOrder = db.prepare(`
+            SELECT pn.id, pn.display_id, pn.mesecni, u.ime, u.priimek, u.email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
+        `).get(potni_nalog_id);
+        if (!notificationOrder) {
+            return res.status(404).json({ success: false, error: "Potni nalog ni bil najden." });
+        }
 
         // Extract employee payment amount from request body.
         const placilo_zaposlenemu = req.body.placilo_zaposlenemu;
@@ -4237,6 +4571,15 @@ app.post("/api/admin/obracun/save/:id", requireAdmin,  upload.any(), (req, res) 
             WHERE id = ?
         `).run(skupni_stroski, placilo_zaposlenemu, obracun_id);
 
+        const notifyObracunUpdated = Number(notificationOrder.mesecni) === 1
+            ? monthlyObracunUpdated
+            : obracunUpdated;
+        await notifyObracunUpdated({
+            displayId: notificationOrder.display_id,
+            traveler: notificationOrder,
+            changedBy: "admin",
+        });
+
         // Send success response with billing summary.
         res.json({
             success: true,
@@ -4263,10 +4606,19 @@ app.post("/api/admin/obracun/save/:id", requireAdmin,  upload.any(), (req, res) 
 
 // END BILLING AND MARK TRAVEL ORDER AS COMPLETED
 // Finalize billing record with all expenses and change travel order status to completed.
-app.post("/api/admin/obracun/end/:id", requireAdmin, upload.any(), (req, res) => {
+app.post("/api/admin/obracun/end/:id", requireAdmin, upload.any(), async (req, res) => {
     try {
         // Extract travel order ID from URL parameters.
         const potni_nalog_id = req.params.id;
+        const notificationOrder = db.prepare(`
+            SELECT pn.id, pn.display_id, pn.mesecni, u.ime, u.priimek, u.email
+            FROM potni_nalogi pn
+            JOIN users u ON u.id = pn.user_id
+            WHERE pn.id = ?
+        `).get(potni_nalog_id);
+        if (!notificationOrder) {
+            return res.status(404).json({ success: false, error: "Potni nalog ni bil najden." });
+        }
 
         // Extract employee payment amount from request body.
         const placilo_zaposlenemu = req.body.placilo_zaposlenemu;
@@ -4468,6 +4820,15 @@ app.post("/api/admin/obracun/end/:id", requireAdmin, upload.any(), (req, res) =>
             WHERE id = ?
         `).run(potni_nalog_id);
 
+        const notifyOrderCompleted = Number(notificationOrder.mesecni) === 1
+            ? monthlyOrderCompleted
+            : orderCompleted;
+        await notifyOrderCompleted({
+            displayId: notificationOrder.display_id,
+            traveler: notificationOrder,
+            changedBy: "admin",
+        });
+
         // Send success response with billing summary.
         res.json({
             success: true,
@@ -4605,6 +4966,7 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
             id,
             ime,
             priimek,
+            email,
             prebivalisce,
             username,
             geslo,
@@ -4623,13 +4985,32 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
             });
         }
 
-        const existingUser = db.prepare("SELECT id, geslo FROM users WHERE id = ?").get(id);
+        const existingUser = db.prepare(`
+            SELECT id, ime, priimek, prebivalisce, email, username, geslo,
+                   delovno_mesto, role, status, registerska, vin
+            FROM users
+            WHERE id = ?
+        `).get(id);
         if (!existingUser) {
             return res.status(404).json({ success: false, message: "Uporabnik ne obstaja." });
         }
         const hashedPassword = geslo
             ? await bcrypt.hash(geslo, 10)
             : existingUser.geslo;
+        const updatedUser = {
+            ime,
+            priimek,
+            email,
+            prebivalisce,
+            username,
+            geslo: hashedPassword,
+            delovno_mesto,
+            role,
+            registerska,
+            vin,
+            status,
+        };
+        const changes = getUserChanges(existingUser, updatedUser);
 
         // Prepare SQL update statement with named parameters.
         // Note: User ID is not changed, only other fields are updated.
@@ -4638,6 +5019,7 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
             SET
                 ime = @ime,
                 priimek = @priimek,
+                email = @email,
                 prebivalisce = @prebivalisce,
                 username = @username,
                 geslo = @geslo,
@@ -4654,6 +5036,7 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
             id,
             ime,
             priimek,
+            email,
             prebivalisce,
             username,
             geslo: hashedPassword,
@@ -4671,6 +5054,12 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
                 message: "Uporabnik ne obstaja."
             });
         }
+
+        await userInfoChanged({
+            traveler: { ime, priimek, email },
+            changes,
+            changedBy: "admin",
+        });
 
         // Send success response with updated user ID.
         res.status(200).json({
@@ -5032,34 +5421,88 @@ app.get("/api/admin/stats", requireAdmin, async (req, res) => {
 })
 
 
-// ADD FUNCTION FOR AUTO UPDATE STATUS IN TRAVEL ORDERS (ACIVE->NOT PAID, APPROVED->ACTIVE)
-cron.schedule('* * * * *', () => {
+// Automatically update travel-order statuses and notify each affected traveler.
+cron.schedule('* * * * *', async () => {
 
     try {
 
         const today = new Date();
         const todayString = today.toISOString().split('T')[0]; 
 
-        // Update APPROVED -> NOT PAID (if travel order was made in the past).
-        const result3 = db.prepare(`
-            UPDATE potni_nalogi
-            SET status = 'Not paid'
-            WHERE status = 'Approved' AND datum_prihoda < ?
-        `).run(todayString);
+        const updateStatuses = db.transaction(() => {
+            const transitions = [];
+            const selectOrders = (condition, date) => db.prepare(`
+                SELECT pn.id, pn.display_id, pn.mesecni, pn.status,
+                       u.ime, u.priimek, u.email
+                FROM potni_nalogi pn
+                JOIN users u ON u.id = pn.user_id
+                WHERE ${condition} ?
+            `).all(date);
+            const updateOrders = (fromStatus, toStatus, condition, date) => db.prepare(`
+                UPDATE potni_nalogi
+                SET status = ?
+                WHERE status = ? AND ${condition} ?
+            `).run(toStatus, fromStatus, date);
+            const addTransitions = (orders, toStatus) => {
+                transitions.push(...orders.map((order) => ({
+                    ...order,
+                    fromStatus: order.status,
+                    toStatus,
+                })));
+            };
 
-        // Update APPROVED -> ACTIVE (if departure date is today or past).
-        const result2 = db.prepare(`
-            UPDATE potni_nalogi
-            SET status = 'Active'
-            WHERE status = 'Approved' AND datum_odhoda <= ?
-        `).run(todayString);
- 
-        // Update ACTIVE -> NOT PAID (if arrival date has passed).
-        const result1 = db.prepare(`
-            UPDATE potni_nalogi
-            SET status = 'Not paid'
-            WHERE status = 'Active' AND datum_prihoda < ?
-        `).run(todayString);
+            const approvedPastArrival = selectOrders(
+                "pn.status = 'Approved' AND pn.datum_prihoda <",
+                todayString
+            );
+            updateOrders("Approved", "Not paid", "datum_prihoda <", todayString);
+            addTransitions(approvedPastArrival, "Not paid");
+
+            const approvedDeparted = selectOrders(
+                "pn.status = 'Approved' AND pn.datum_odhoda <=",
+                todayString
+            );
+            updateOrders("Approved", "Active", "datum_odhoda <=", todayString);
+            addTransitions(approvedDeparted, "Active");
+
+            const activePastArrival = selectOrders(
+                "pn.status = 'Active' AND pn.datum_prihoda <",
+                todayString
+            );
+            updateOrders("Active", "Not paid", "datum_prihoda <", todayString);
+            addTransitions(activePastArrival, "Not paid");
+
+            return transitions;
+        });
+
+        const transitions = updateStatuses();
+
+        for (const transition of transitions) {
+            if (!transition.email) {
+                console.error(
+                    `Samodejna sprememba statusa naloga ${transition.display_id}: uporabnik nima e-poštnega naslova.`
+                );
+                continue;
+            }
+
+            const result = await orderStatusChanged({
+                displayId: transition.display_id,
+                traveler: {
+                    ime: transition.ime,
+                    priimek: transition.priimek,
+                    email: transition.email,
+                },
+                fromStatus: transition.fromStatus,
+                toStatus: transition.toStatus,
+                isMonthly: Number(transition.mesecni) === 1,
+            });
+
+            if (!result.traveler) {
+                console.error(
+                    `E-poštno obvestilo o samodejni spremembi statusa naloga ${transition.display_id} ni bilo poslano.`
+                );
+            }
+        }
         
     } catch (error) {
         console.error('Error updating travel order statuses:', error);

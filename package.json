@@ -1,32 +1,26 @@
 {
-  "name": "potni_nalog_app",
+  "name": "potni-nalogi-mil",
   "version": "1.0.0",
-  "description": "Aplikacija za potne naloge",
-  "main": "server.js",
+  "description": "",
+  "main": "checkUsers.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tinkleut/Mil-NOTINT-potni.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "better-sqlite3": "^13.0.3",
-    "docx": "^9.7.1",
-    "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "jszip": "^3.10.2",
-    "multer": "^2.4.0",
-    "node-cron": "^4.6.0",
-    "xml-js": "^1.6.11"
+  "bugs": {
+    "url": "https://github.com/tinkleut/Mil-NOTINT-potni/issues"
   },
-  "allowScripts": {
-    "bcrypt@6.0.0": true,
-    "docx@9.7.1": true,
-    "express-session@1.19.0": true,
-    "node-cron@4.6.0": true,
-    "multer@2.3.0": true
+  "homepage": "https://github.com/tinkleut/Mil-NOTINT-potni#readme",
+  "dependencies": {
+    "dotenv": "^18.0.7",
+    "nodemailer": "^10.3.1"
   }
 }
