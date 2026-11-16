@@ -68,6 +68,7 @@ db.exec(`
         ime TEXT NOT NULL,
         priimek TEXT NOT NULL,
         prebivalisce TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE CHECK (email LIKE '%_@__%.__%'), 
 
         username TEXT NOT NULL UNIQUE,
         geslo TEXT NOT NULL DEFAULT 'NotPassword1.',
@@ -432,25 +433,25 @@ console.log('Database initialization complete.');
 
 db.exec(`
     INSERT OR IGNORE INTO users
-    (ime, priimek, delovno_mesto, username, geslo, prebivalisce, role, status, registerska, vin)
+    (ime, priimek, email, delovno_mesto, username, geslo, prebivalisce, role, status, registerska, vin)
     VALUES
-    ('Boris', 'Gašperin', 'Operativni direktor', 'borisG', 'NotPassword1.', 'Hruševo 152,1356  Dobrova', 'admin', 'Active', 'LJ08-EDN', 'TMBEK9PJ2P4014939'),
+    ('Boris', 'Gašperin', 'boris.gasperin@milsistemika.com', 'Operativni direktor', 'borisG', 'NotPassword1.', 'Hruševo 152,1356  Dobrova', 'admin', 'Active', 'LJ08-EDN', 'TMBEK9PJ2P4014939'),
 
-    ('Hana', 'Zupančič', 'Pravnik', 'hanaZ', 'NotPassword1.', 'Celovška cesta 147,1000  Ljubljan', 'zaposleni', 'Active', 'nima', 'nima'),
+    ('Hana', 'Zupančič', 'hana.zupancic@milsistemika.com', 'Pravnik', 'hanaZ', 'NotPassword1.', 'Celovška cesta 147,1000  Ljubljan', 'zaposleni', 'Active', 'nima', 'nima'),
 
-    ('Iztok', 'Škof', 'Strokovnjak za področje', 'iztokS', 'NotPassword1.', 'Vzajemna 24,1000  Ljubljana', 'zaposleni', 'Active', 'LJ 65-PMV', 'W0VERHNP2MJ522025'),
+    ('Iztok', 'Škof', 'iztok.skof@milsistemika.com', 'Strokovnjak za področje', 'iztokS', 'NotPassword1.', 'Vzajemna 24,1000  Ljubljana', 'zaposleni', 'Active', 'LJ 65-PMV', 'W0VERHNP2MJ522025'),
 
-    ('Mateja', 'Ivanc', 'Vodja prodaje', 'matejaI', 'NotPassword1.', 'Golo brdo 195,1215  Medvode', 'zaposleni', 'Active', 'Lj 42-DEV', 'TSMJYBD2S00C04949'),
+    ('Mateja', 'Ivanc', 'mateja.ivanc@milsistemika.com', 'Vodja prodaje', 'matejaI', 'NotPassword1.', 'Golo brdo 195,1215  Medvode', 'zaposleni', 'Active', 'Lj 42-DEV', 'TSMJYBD2S00C04949'),
 
-    ('Sašo', 'Radić', 'Strokovnjak za področje', 'sasoR', 'NotPassword1.', 'Jakčeva ulica 8,1000  Ljubljana', 'zaposleni', 'Active', 'LJ 27-CRZ', 'TMBER6NW8M3092541'),
+    ('Sašo', 'Radić', 'saso.radic@milsistemika.com', 'Strokovnjak za področje', 'sasoR', 'NotPassword1.', 'Jakčeva ulica 8,1000  Ljubljana', 'zaposleni', 'Active', 'LJ 27-CRZ', 'TMBER6NW8M3092541'),
 
-    ('Simon', 'Filipič', 'Strokovnjak za področje', 'simonF', 'NotPassword1.', 'Štatenberg 83,2321  Makole', 'zaposleni', 'Active', 'MB 21-UTL', 'WVWZZZ3CZHE202661'),
+    ('Simon', 'Filipič', 'simon.filipic@milsistemika.com', 'Strokovnjak za področje', 'simonF', 'NotPassword1.', 'Štatenberg 83,2321  Makole', 'zaposleni', 'Active', 'MB 21-UTL', 'WVWZZZ3CZHE202661'),
 
-    ('Vito', 'Ferlan', 'Vodilni inženir', 'vitoF', 'NotPassword1.', 'Kunaverjeva ulica 4,1000  Ljubljana', 'zaposleni', 'Active', 'LJ DZU-98', 'JMBLNCX3A9U002756'),
+    ('Vito', 'Ferlan', 'vito.ferlan@milsistemika.com', 'Vodilni inženir', 'vitoF', 'NotPassword1.', 'Kunaverjeva ulica 4,1000  Ljubljana', 'zaposleni', 'Active', 'LJ DZU-98', 'JMBLNCX3A9U002756'),
 
-    ('Žiga', 'Zupančič', 'Inženir programske opreme', 'zigaZ', 'NotPassword1.', 'Zaloška 92A,1000  Ljubljana', 'zaposleni', 'Active', 'nima', 'nima'),
+    ('Žiga', 'Zupančič', 'ziga.zupancic@milsistemika.com', 'Inženir programske opreme', 'zigaZ', 'NotPassword1.', 'Zaloška 92A,1000  Ljubljana', 'zaposleni', 'Active', 'nima', 'nima'),
 
-    ('Nina', 'Minov', 'Vodja kadrovske službe', 'ninaM', 'NotPassword1.', 'Nazorjeva ulica 10, 4000 Kranj', 'admin', 'Active', 'LJ 064-NB', 'JMZKFGW7600623958')
+    ('Nina', 'Minov', 'nina.minov@milsistemika.com', 'Vodja kadrovske službe', 'ninaM', 'NotPassword1.', 'Nazorjeva ulica 10, 4000 Kranj', 'admin', 'Active', 'LJ 064-NB', 'JMZKFGW7600623958')
  `);
 
 

@@ -22,6 +22,7 @@ const app = express();
 // INITIALIZE DATABASE CONNECTION
 // Import database instance and ID generator function from database module.
 const { db, nextTravelOrderDisplayId } = require("./private/JS/potniNalogDatabase");
+const { normalizeEmailAddress } = require("./emailUtils");
 
 const {
     orderCreated,
@@ -328,6 +329,11 @@ app.use(session({
 
 // ROOT PATH ROUTE
 app.get("/", (req, res) => {
+    res.redirect("/login");
+});
+
+// ROOT PATH ROUTE
+app.get("/main", (req, res) => {
     res.redirect("/login");
 });
 
@@ -725,6 +731,7 @@ app.get("/api/user_info", requireLogin, (req, res) => {
                     username,
                     ime,
                     priimek,
+                    email,
                     prebivalisce,
                     delovno_mesto,
                     registerska,
@@ -745,6 +752,7 @@ app.get("/api/user_info", requireLogin, (req, res) => {
             username: user.username,
             ime: user.ime,
             priimek: user.priimek,
+            email: user.email,
             prebivalisce: user.prebivalisce,
             delovno_mesto: user.delovno_mesto,
             registerska: user.registerska,
@@ -783,6 +791,7 @@ app.get("/api/user_info_admin", requireAdmin, (req, res) => {
                     username,
                     ime,
                     priimek,
+                    email,
                     prebivalisce,
                     delovno_mesto,
                     registerska,
@@ -803,6 +812,7 @@ app.get("/api/user_info_admin", requireAdmin, (req, res) => {
             username: user.username,
             ime: user.ime,
             priimek: user.priimek,
+            email: user.email,
             prebivalisce: user.prebivalisce,
             delovno_mesto: user.delovno_mesto,
             registerska: user.registerska,
@@ -4862,6 +4872,7 @@ app.post("/api/admin/dodaj_user", requireAdmin, async (req, res) => {
             ime,
             priimek,
             prebivalisce,
+            email,
             username,
             geslo,
             delovno_mesto,
@@ -4870,6 +4881,25 @@ app.post("/api/admin/dodaj_user", requireAdmin, async (req, res) => {
             vin,
             status
         } = req.body;
+
+        const emailAddress = normalizeEmailAddress(email);
+        if (!emailAddress) {
+            return res.status(400).json({
+                success: false,
+                message: "Vnesite veljaven e-poštni naslov."
+            });
+        }
+
+        const duplicateUser = db.prepare(`
+            SELECT id FROM users
+            WHERE username = ? OR email = ?
+        `).get(username, emailAddress);
+        if (duplicateUser) {
+            return res.status(409).json({
+                success: false,
+                message: "Uporabniško ime ali e-poštni naslov že obstaja."
+            });
+        }
 
         // Initialize variable to store encrypted password.
         let hashedPassword;
@@ -4888,9 +4918,10 @@ app.post("/api/admin/dodaj_user", requireAdmin, async (req, res) => {
 
         // Prepare SQL insert statement with named parameters.
         const insertUser = db.prepare(`
-            INSERT OR IGNORE INTO users (
+            INSERT INTO users (
                 ime,
                 priimek,
+                email,
                 prebivalisce,
                 username,
                 geslo,
@@ -4903,6 +4934,7 @@ app.post("/api/admin/dodaj_user", requireAdmin, async (req, res) => {
             VALUES (
                 @ime,
                 @priimek,
+                @email,
                 @prebivalisce,
                 @username,
                 @geslo,
@@ -4918,6 +4950,7 @@ app.post("/api/admin/dodaj_user", requireAdmin, async (req, res) => {
         const result = insertUser.run({
             ime,
             priimek,
+            email: emailAddress,
             prebivalisce,
             username,
             geslo: hashedPassword,
@@ -4928,14 +4961,6 @@ app.post("/api/admin/dodaj_user", requireAdmin, async (req, res) => {
             status
         });
 
-        // Check if user was inserted; 0 changes means username already exists.
-        if (result.changes === 0) {
-            return res.status(409).json({
-                success: false,
-                message: "Uporabnik že obstaja."
-            });
-        }
-
         // Send success response with new user ID.
         res.status(201).json({
             success: true,
@@ -4944,6 +4969,13 @@ app.post("/api/admin/dodaj_user", requireAdmin, async (req, res) => {
         });
 
     } catch (error) {
+        if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+            return res.status(409).json({
+                success: false,
+                message: "Uporabniško ime ali e-poštni naslov že obstaja."
+            });
+        }
+
         // Log error for debugging purposes.
         console.error("Napaka pri dodajanju uporabnika:", error);
 
@@ -4985,6 +5017,14 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
             });
         }
 
+        const emailAddress = normalizeEmailAddress(email);
+        if (!emailAddress) {
+            return res.status(400).json({
+                success: false,
+                message: "Vnesite veljaven e-poštni naslov."
+            });
+        }
+
         const existingUser = db.prepare(`
             SELECT id, ime, priimek, prebivalisce, email, username, geslo,
                    delovno_mesto, role, status, registerska, vin
@@ -4994,13 +5034,24 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
         if (!existingUser) {
             return res.status(404).json({ success: false, message: "Uporabnik ne obstaja." });
         }
+        const duplicateEmail = db.prepare(`
+            SELECT id FROM users
+            WHERE email = ? AND id != ?
+        `).get(emailAddress, id);
+        if (duplicateEmail) {
+            return res.status(409).json({
+                success: false,
+                message: "Ta e-poštni naslov že uporablja drug uporabnik."
+            });
+        }
+
         const hashedPassword = geslo
             ? await bcrypt.hash(geslo, 10)
             : existingUser.geslo;
         const updatedUser = {
             ime,
             priimek,
-            email,
+            email: emailAddress,
             prebivalisce,
             username,
             geslo: hashedPassword,
@@ -5036,7 +5087,7 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
             id,
             ime,
             priimek,
-            email,
+            email: emailAddress,
             prebivalisce,
             username,
             geslo: hashedPassword,
@@ -5056,7 +5107,7 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
         }
 
         await userInfoChanged({
-            traveler: { ime, priimek, email },
+            traveler: { ime, priimek, email: emailAddress },
             changes,
             changedBy: "admin",
         });
@@ -5069,6 +5120,13 @@ app.post("/api/admin/posodobi_user", requireAdmin, async (req, res) => {
         });
 
     } catch (error) {
+        if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+            return res.status(409).json({
+                success: false,
+                message: "Uporabniško ime ali e-poštni naslov že obstaja."
+            });
+        }
+
         // Log error for debugging purposes.
         console.error("Napaka pri posodabljanju uporabnika:", error);
 
@@ -5382,6 +5440,7 @@ app.get("/api/admin/users/:userId", requireAdmin, async (req, res) => {
         res.json({
             ime: user.ime,
             priimek: user.priimek,
+            email: user.email,
             registerska: user.registerska,
             vin: user.vin,
             username: user.username,

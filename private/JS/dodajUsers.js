@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("ime").value = user.ime || "";
             document.getElementById("priimek").value = user.priimek || "";
             document.getElementById("prebivalisce").value = user.prebivalisce || "";
+            document.getElementById("email").value = user.email || "";
             document.getElementById("registerska").value = user.registerska || "";
             document.getElementById("vin").value = user.vin || "";
             document.getElementById("username").value = user.username || "";
@@ -65,6 +66,7 @@ userForm.addEventListener("submit", async (event) => {
     const ime = document.getElementById("ime").value;
     const priimek = document.getElementById("priimek").value;
     const prebivalisce = document.getElementById("prebivalisce").value;
+    const email = document.getElementById("email").value.trim();
     const registerska = document.getElementById("registerska").value;
     const vin = document.getElementById("vin").value;
     const username = document.getElementById("username").value;
@@ -75,7 +77,7 @@ userForm.addEventListener("submit", async (event) => {
     const userId = document.getElementById("userId").value;
 
     // Validate that all required fields are filled in.
-    if (!ime || !priimek || !prebivalisce || !registerska || !vin || !username || !delovno_mesto || !role || !status || (!userId && !geslo)) {
+    if (!ime || !priimek || !prebivalisce || !email || !registerska || !vin || !username || !delovno_mesto || !role || !status || (!userId && !geslo)) {
         document.getElementById("message").textContent = "Prosim izpolnite vsa polja";
         document.getElementById("message").style.color = "red";
         return;
@@ -91,6 +93,7 @@ userForm.addEventListener("submit", async (event) => {
             ime,
             priimek,
             prebivalisce,
+            email,
             registerska,
             vin,
             username,

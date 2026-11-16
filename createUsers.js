@@ -1,9 +1,15 @@
 const Database = require("better-sqlite3");
 const bcrypt = require("bcrypt");
+const { normalizeEmailAddress } = require("./emailUtils");
 
 const db = new Database("./potniNalogiDatabase.db");
 
 async function createUser() {
+    const email = normalizeEmailAddress(process.argv[2]);
+    if (!email) {
+        throw new Error("Uporaba: node createUsers.js <veljaven e-poštni naslov>");
+    }
+
     const ime = "Janez";
     const priimek = "Novak";
     const prebivalisce = "Ljubljana";
@@ -22,6 +28,7 @@ async function createUser() {
         INSERT INTO users (
             ime,
             priimek,
+            email,
             prebivalisce,
             username,
             geslo,
@@ -30,12 +37,13 @@ async function createUser() {
             registerska,
             vin
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     stmt.run(
         ime,
         priimek,
+        email,
         prebivalisce,
         username,
         hashedPassword,
@@ -53,4 +61,9 @@ async function createUser() {
     db.close();
 }
 
-createUser();
+createUser()
+    .catch((error) => {
+        console.error(error.message);
+        process.exitCode = 1;
+    })
+    .finally(() => db.close());
