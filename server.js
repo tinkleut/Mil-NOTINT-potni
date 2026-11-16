@@ -5293,7 +5293,7 @@ app.put("/api/admin/admin-email", requireAdmin, (req, res) => {
         const updatedLines = lines.reduce((result, line) => {
             if (/^\s*ADMIN_EMAIL\s*=/.test(line)) {
                 if (!found) {
-                    result.push(`ADMIN_EMAIL="${emails.join(",")}"`);
+                    result.push(`ADMIN_EMAIL=${emails.join(",")}`);
                     found = true;
                 }
                 return result;
@@ -5302,7 +5302,7 @@ app.put("/api/admin/admin-email", requireAdmin, (req, res) => {
             return result;
         }, []);
 
-        if (!found) updatedLines.push(`ADMIN_EMAIL="${emails.join(",")}"`);
+        if (!found) updatedLines.push(`ADMIN_EMAIL=${emails.join(",")}`);
         fs.writeFileSync(envPath, updatedLines.join(newline), { mode: 0o600 });
         process.env.ADMIN_EMAIL = emails.join(",");
 
