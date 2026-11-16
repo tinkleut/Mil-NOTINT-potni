@@ -51,6 +51,30 @@
 
         <div id="alert" class="login-message"></div>
 
+        <section id="admin-email-settings" class="travel-order section active">
+            <div class="travel-order-header">
+                <h2>E-pošta administratorjev</h2>
+                <p>Naslovi za obvestila o potnih nalogih. Več naslovov ločite z vejico.</p>
+            </div>
+
+            <form id="admin-email-form" class="summary-section">
+                <div class="form-group">
+                    <label for="admin-email">E-poštni naslovi</label>
+                    <input
+                        type="text"
+                        id="admin-email"
+                        name="adminEmail"
+                        autocomplete="email"
+                        placeholder="admin@example.com"
+                    >
+                </div>
+                <button type="submit" class="login-button">Shrani admin e-pošto</button>
+            </form>
+        </section>
+
+        <br>
+        <br>
+
         <section id="users" class="travel-order section active">
 
             <div class="travel-order-header">

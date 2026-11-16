@@ -1,9 +1,21 @@
 // SERVER SIDE
 
+// SERVER SIDE
+// TO RUN THE WEB APP DO THE FOLLOWING:
+// create a .env file
+// (cmd.)npm install 
+// node server.js
+// node passwordHash.js
+// go to the localhost:2000
+
+
+
 
 
 // IMPORT REQUIRED LIBRARIES
 // Download and import all necessary packages for server functionality.
+const fs = require("fs");
+const path = require("path");
 const multer = require('multer');
 const express = require("express");
 const bcrypt = require("bcrypt");
@@ -5245,6 +5257,65 @@ app.post("/api/admin/dodaj_dnevnico", requireAdmin, (req, res) => {
 
 
 // FUNCTION FOR COUNTING ALL USERS
+app.get("/api/admin/admin-email", requireAdmin, (req, res) => {
+    res.json({ adminEmail: process.env.ADMIN_EMAIL || "" });
+});
+
+app.put("/api/admin/admin-email", requireAdmin, (req, res) => {
+    const submittedEmail = req.body.adminEmail;
+    if (typeof submittedEmail !== "string" || !submittedEmail.trim()) {
+        return res.status(400).json({
+            success: false,
+            message: "Vnesite vsaj en e-poštni naslov."
+        });
+    }
+
+    const emails = submittedEmail.split(",").map((email) => email.trim());
+    if (emails.some((email) => !normalizeEmailAddress(email))) {
+        return res.status(400).json({
+            success: false,
+            message: "Vnesite veljavne e-poštne naslove, ločene z vejico."
+        });
+    }
+
+    try {
+        const envPath = path.join(__dirname, ".env");
+        let envContent = "";
+        try {
+            envContent = fs.readFileSync(envPath, "utf8");
+        } catch (error) {
+            if (error.code !== "ENOENT") throw error;
+        }
+
+        const newline = envContent.includes("\r\n") ? "\r\n" : "\n";
+        const lines = envContent ? envContent.split(/\r?\n/) : [];
+        let found = false;
+        const updatedLines = lines.reduce((result, line) => {
+            if (/^\s*ADMIN_EMAIL\s*=/.test(line)) {
+                if (!found) {
+                    result.push(`ADMIN_EMAIL="${emails.join(",")}"`);
+                    found = true;
+                }
+                return result;
+            }
+            result.push(line);
+            return result;
+        }, []);
+
+        if (!found) updatedLines.push(`ADMIN_EMAIL="${emails.join(",")}"`);
+        fs.writeFileSync(envPath, updatedLines.join(newline), { mode: 0o600 });
+        process.env.ADMIN_EMAIL = emails.join(",");
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error("Napaka pri shranjevanju admin e-pošte:", error);
+        res.status(500).json({
+            success: false,
+            message: "Admin e-pošte ni mogoče shraniti."
+        });
+    }
+});
+
 app.get("/api/admin/count_users", requireAdmin, async (req, res) => {
     try {
         const totalResults = db.prepare(`

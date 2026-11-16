@@ -6,6 +6,63 @@ function escapeHTML(value) {
     })[character]);
 }
 
+function showAdminEmailMessage(text, type = "error") {
+    const message = document.getElementById("alert");
+    if (!message) return;
+
+    message.textContent = text;
+    message.className = `login-message ${type}`;
+}
+
+async function loadAdminEmail() {
+    const input = document.getElementById("admin-email");
+    if (!input) return;
+
+    try {
+        const response = await fetch("/api/admin/admin-email");
+        if (!response.ok) {
+            throw new Error(`Napaka pri pridobivanju admin e-pošte: ${response.status}`);
+        }
+
+        const data = await response.json();
+        input.value = data.adminEmail;
+        if (!data.adminEmail) {
+            showAdminEmailMessage("Admin e-pošta ni nastavljena v konfiguraciji .env.");
+        }
+    } catch (error) {
+        console.error("Napaka pri pridobivanju admin e-pošte:", error);
+        showAdminEmailMessage("Admin e-pošte ni mogoče pridobiti.");
+    }
+}
+
+async function saveAdminEmail(event) {
+    event.preventDefault();
+
+    const input = document.getElementById("admin-email");
+    const button = event.currentTarget.querySelector("button");
+
+    try {
+        button.disabled = true;
+        const response = await fetch("/api/admin/admin-email", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ adminEmail: input.value.trim() })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "E-maila ni mogoče shraniti.");
+        }
+
+        showAdminEmailMessage("Admin e-mail je bil uspešno posodobljen.", "success");
+    } catch (error) {
+        console.error("Napaka pri shranjevanju admin e-pošte:", error);
+        showAdminEmailMessage(error.message || "Admin e-maila ni mogoče shraniti.");
+    } finally {
+        button.disabled = false;
+    }
+}
+
 
 
 // COUNT TOTAL USERS AND ADMINS FROM THE SERVER
@@ -144,6 +201,9 @@ async function urediDnevnico(dnevnicaId) {
 
 // INITIALIZE DASHBOARD DATA WHEN PAGE FINISHES LOADING
 document.addEventListener("DOMContentLoaded", () => {
+    loadAdminEmail();
+    document.getElementById("admin-email-form").addEventListener("submit", saveAdminEmail);
+
     // Count and display total users and admin count.
     countUsers();
     
