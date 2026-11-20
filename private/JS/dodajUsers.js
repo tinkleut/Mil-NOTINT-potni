@@ -128,8 +128,10 @@ userForm.addEventListener("submit", async (event) => {
             document.getElementById("message").textContent = message;
             document.getElementById("message").style.color = "green";
             
-            // Clear all form fields after successful submission.
             userForm.reset();
+            setTimeout(() => {
+                window.location.href = "/admin/settings";
+            }, 750);
         } else {
             // Display error message from server if operation failed.
             document.getElementById("message").textContent = data.message || "Napaka pri shranjevanju";
